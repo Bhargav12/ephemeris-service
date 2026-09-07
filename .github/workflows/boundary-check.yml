@@ -1,0 +1,26 @@
+name: AGPL boundary check
+
+# Blocks panchanga-specific business logic from ever entering this repo.
+# This repo must stay generic (raw astronomical positions only) — see
+# README.md "Why this service is deliberately generic."
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  forbidden-terms:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for panchanga-specific terms
+        run: |
+          set -e
+          FORBIDDEN='tithi|nakshatra|karana|rahu.?kalam|yamaganda|gulika|muhurta|ayanamsa|panchanga'
+          if grep -RIiE "$FORBIDDEN" --include="*.py" --exclude-dir=".git" .; then
+            echo "::error::Found panchanga-specific term(s) in ephemeris-service."
+            echo "This repo must stay generic. Move this logic to panchanga-core instead."
+            exit 1
+          fi
+          echo "OK: no panchanga-specific terms found."

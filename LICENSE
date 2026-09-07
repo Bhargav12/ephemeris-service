@@ -1,0 +1,24 @@
+PLACEHOLDER — replace before publishing this repository.
+
+This repository is licensed under the GNU Affero General Public License
+version 3 (AGPL-3.0). Before this repo is made public or deployed:
+
+1. Replace this file with the full, verbatim AGPL-3.0 license text from:
+   https://www.gnu.org/licenses/agpl-3.0.txt
+
+2. Preserve the original Swiss Ephemeris copyright notice, e.g.:
+
+   Copyright (C) 1997-2026 Astrodienst AG, Switzerland. All rights reserved.
+   Authors of the Swiss Ephemeris: Dieter Koch and Alois Treindl.
+
+   The names of the authors or of the copyright holder (Astrodienst) must
+   not be used for promoting any software, product, or service which uses
+   or contains the Swiss Ephemeris, except as permitted by Astrodienst in
+   writing.
+
+3. If any modifications are made to the Swiss Ephemeris source itself,
+   those modifications must also be released under AGPL-3.0.
+
+Do not deploy or publish this repository until this file has been replaced
+with the real license text and notices above, and legal/Astrodienst
+clarification (see product plan §11) has been obtained.
