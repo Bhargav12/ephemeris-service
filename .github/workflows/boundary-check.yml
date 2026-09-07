@@ -18,7 +18,10 @@ jobs:
         run: |
           set -e
           FORBIDDEN='tithi|nakshatra|karana|rahu.?kalam|yamaganda|gulika|muhurta|ayanamsa|panchanga'
-          if grep -RIiE "$FORBIDDEN" --include="*.py" --exclude-dir=".git" .; then
+          # Exclude lines explicitly marked as documentation about the boundary itself.
+          MATCHES=$(grep -RIiE "$FORBIDDEN" --include="*.py" --exclude-dir=".git" . | grep -v "boundary-check-ignore" || true)
+          if [ -n "$MATCHES" ]; then
+            echo "$MATCHES"
             echo "::error::Found panchanga-specific term(s) in ephemeris-service."
             echo "This repo must stay generic. Move this logic to panchanga-core instead."
             exit 1

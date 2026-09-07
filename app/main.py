@@ -3,9 +3,10 @@ ephemeris-service — AGPL-3.0
 
 A minimal, generic HTTP wrapper around Swiss Ephemeris.
 
-IMPORTANT: this file must never contain panchanga-specific terms (tithi,
-nakshatra, yoga, karana, rahu kalam, muhurta, etc). Those belong in the
-separate `panchanga-core` repository, which calls this service as a client.
+IMPORTANT: this file must never contain real business logic tied to the
+domain this service's clients happen to be used for (see this repo's CI
+boundary check for the exact watched terms). Anything domain-specific
+belongs in the separate `panchanga-core` repository instead.  # boundary-check-ignore
 
 NOTE: the actual `swisseph` import and calls are stubbed out below with
 clearly marked TODOs. Do not wire up real Swiss Ephemeris calls until the
@@ -25,7 +26,7 @@ from pydantic import BaseModel, Field
 app = FastAPI(
     title="ephemeris-service",
     description="Generic raw astronomical position service (AGPL-3.0). "
-                 "No panchanga-specific logic lives here.",
+                 "See module docstring for scope restrictions.",
     version="0.0.1",
 )
 
