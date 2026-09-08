@@ -1,0 +1,20 @@
+NOTICE
+
+This project (ephemeris-service) is licensed under the GNU Affero General
+Public License version 3 (AGPL-3.0-only). See LICENSE for the full text.
+
+This service uses the Swiss Ephemeris library:
+
+    Copyright (C) 1997-2026 Astrodienst AG, Switzerland. All rights reserved.
+    Authors of the Swiss Ephemeris: Dieter Koch and Alois Treindl.
+
+The names of the authors or of the copyright holder (Astrodienst) must not
+be used for promoting any software, product, or service which uses or
+contains the Swiss Ephemeris, except as permitted by Astrodienst in writing.
+
+If any modifications are made to the Swiss Ephemeris source itself, those
+modifications must also be released under AGPL-3.0.
+
+Project-specific copyright:
+
+    Copyright (C) 2026 [YOUR NAME / COMPANY NAME] — replace before publishing.

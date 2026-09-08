@@ -1,24 +1,20 @@
-PLACEHOLDER — replace before publishing this repository.
+ACTION REQUIRED before this repo is considered compliant:
 
 This repository is licensed under the GNU Affero General Public License
-version 3 (AGPL-3.0). Before this repo is made public or deployed:
+version 3 (AGPL-3.0-only). This decision was made deliberately and is
+final — see docs/product-plan.md §11 in the panchanga-core repo for the
+full reasoning and Astrodienst's clarification that led to it.
 
-1. Replace this file with the full, verbatim AGPL-3.0 license text from:
-   https://www.gnu.org/licenses/agpl-3.0.txt
+Replace this file with the full, unmodified, verbatim AGPL-3.0 license
+text, downloaded directly from:
 
-2. Preserve the original Swiss Ephemeris copyright notice, e.g.:
+    https://www.gnu.org/licenses/agpl-3.0.txt
 
-   Copyright (C) 1997-2026 Astrodienst AG, Switzerland. All rights reserved.
-   Authors of the Swiss Ephemeris: Dieter Koch and Alois Treindl.
+Do not paraphrase, reformat, or reconstruct the license text by hand —
+use the official file byte-for-byte. GitHub's own license-detection
+tooling (and AGPL compliance generally) depends on this file containing
+the FSF's exact, unmodified text.
 
-   The names of the authors or of the copyright holder (Astrodienst) must
-   not be used for promoting any software, product, or service which uses
-   or contains the Swiss Ephemeris, except as permitted by Astrodienst in
-   writing.
-
-3. If any modifications are made to the Swiss Ephemeris source itself,
-   those modifications must also be released under AGPL-3.0.
-
-Do not deploy or publish this repository until this file has been replaced
-with the real license text and notices above, and legal/Astrodienst
-clarification (see product plan §11) has been obtained.
+See NOTICE for the required copyright and attribution notices — those
+stay in a separate file per standard practice; do not merge them into
+this file.

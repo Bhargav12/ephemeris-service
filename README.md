@@ -1,21 +1,16 @@
 # ephemeris-service
 
-**License: AGPL-3.0** (see `LICENSE`)
+**License: AGPL-3.0-only. This repo is public.** See `LICENSE` and `NOTICE`.
+
+This is a deliberate, final decision (not the earlier isolation-architecture
+attempt, which was ruled out by Astrodienst's own clarification — see
+`docs/product-plan.md` §11 in the `panchanga-core` repo for the full history).
+Proceeding under AGPL means this repo's complete source is public, and per
+Astrodienst's stated interpretation, `panchanga-core`'s rule layer is also
+public/AGPL-licensed as a consequence — see that repo directly.
 
 A minimal, generic HTTP service exposing raw astronomical positions
 (sun/moon ecliptic longitude, sunrise/sunset) computed via Swiss Ephemeris.
-
-## Why this service is deliberately generic
-
-This API returns raw astronomical facts only — no tithi, nakshatra, rahu
-kalam, or any other panchanga-specific term appears here. That's intentional:
-the service should look like something any astronomy project could use, not
-something carved out of the app purely to route around copyleft. See the
-product plan's Phase 0 / AGPL architecture section for the reasoning.
-
-**Do not add panchanga business logic to this repo.** If you find yourself
-writing "tithi" or "nakshatra" anywhere in this codebase, it belongs in
-`panchanga-core` instead, calling this service as a client.
 
 ## API
 
@@ -35,9 +30,8 @@ Response:
 ```
 
 ### `GET /source`
-Returns the public repository URL and license text location, satisfying
-AGPL §13's "offer source to network users" clause defensively — even though
-today the only caller is our own internal orchestrator.
+AGPL-3.0 §13 compliance: points network users of this service at the
+corresponding source. Keep this pointed at the real public repo URL.
 
 ### `GET /health`
 Basic liveness check.
@@ -52,11 +46,15 @@ export SE_EPHE_PATH=/path/to/ephe
 uvicorn app.main:app --reload
 ```
 
-## Before going to production
+## Status
 
-- [ ] Confirm AGPL applies as intended for this batch-only usage pattern
-      (see clarification email in the main product plan)
-- [ ] Publish this repo publicly BEFORE first production deployment
-- [ ] Add full AGPL-3.0 text + Astrodienst/Koch/Treindl copyright notices
-      to `LICENSE` (currently a placeholder)
-- [ ] Do not use Astrodienst's or the authors' names in product marketing
+Real Swiss Ephemeris calls are no longer blocked pending a licensing
+decision — implement the `pyswisseph` integration in `app/main.py` per the
+existing TODOs.
+
+## Before this repo is considered fully compliant
+
+- [ ] Replace `LICENSE` with the real, unmodified AGPL-3.0 text (see that file)
+- [ ] Fill in the project-specific copyright line in `NOTICE`
+- [ ] Update `PUBLIC_REPO_URL` in `app/main.py`'s `/source` endpoint to the real repo URL
+- [ ] Confirm the repo is actually public on GitHub

@@ -1,8 +1,9 @@
-name: AGPL boundary check
+name: Architecture separation check
 
-# Blocks panchanga-specific business logic from ever entering this repo.
-# This repo must stay generic (raw astronomical positions only) — see
-# README.md "Why this service is deliberately generic."
+# NOTE: this is no longer enforcing a legal/licensing boundary — both
+# ephemeris-service and panchanga-core are AGPL-3.0 and public (see
+# docs/product-plan.md §11). This check is retained purely as an
+# architecture/style guard to keep domain logic out of this service.
 
 on:
   pull_request:
