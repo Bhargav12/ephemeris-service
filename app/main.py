@@ -34,7 +34,6 @@ app = FastAPI(
 
 PUBLIC_REPO_URL = "https://REPLACE-ME.example/ephemeris-service"  # TODO: set before publishing
 
-
 class PositionRequest(BaseModel):
     datetime_utc: datetime = Field(
         ...,
