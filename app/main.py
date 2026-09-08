@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 
 import swisseph as swe
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 # SE_EPHE_PATH is optional: without it (or without the .se1 files it points
 # to) swisseph automatically falls back to its built-in Moshier ephemeris,
@@ -36,9 +36,24 @@ PUBLIC_REPO_URL = "https://REPLACE-ME.example/ephemeris-service"  # TODO: set be
 
 
 class PositionRequest(BaseModel):
-    datetime_utc: datetime = Field(..., description="UTC datetime for the calculation")
+    datetime_utc: datetime = Field(
+        ...,
+        description="UTC datetime for the calculation; must include a UTC offset "
+                    "(e.g. a trailing 'Z' or '+00:00')",
+    )
     lat: float = Field(..., ge=-90, le=90, description="Observer latitude, degrees")
     lon: float = Field(..., ge=-180, le=180, description="Observer longitude, degrees")
+
+    @field_validator("datetime_utc")
+    @classmethod
+    def _reject_naive_datetime(cls, value: datetime) -> datetime:
+        if value.tzinfo is None:
+            raise ValueError(
+                "datetime_utc must include a UTC offset (e.g. trailing 'Z' or "
+                "'+00:00'); a naive datetime would silently be treated as UTC "
+                "even if the caller meant local time"
+            )
+        return value
 
 
 class PositionResponse(BaseModel):
