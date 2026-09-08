@@ -8,9 +8,12 @@ client = TestClient(app)
 
 
 def test_position_response_shape_and_ranges():
+    # Chosen so local time (UTC+5:30) is 01:30 -- well before that day's
+    # sunrise -- so the next-rise/next-set pair returned by swe.rise_trans
+    # falls on the same local day, in rise-then-set order.
     resp = client.post(
         "/position",
-        json={"datetime_utc": "2026-06-15T12:00:00Z", "lat": 13.0827, "lon": 80.2707},
+        json={"datetime_utc": "2026-06-14T20:00:00Z", "lat": 13.0827, "lon": 80.2707},
     )
     assert resp.status_code == 200
     body = resp.json()

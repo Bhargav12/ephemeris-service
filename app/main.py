@@ -102,8 +102,9 @@ def position(req: PositionRequest):
     sun_longitude_deg = swe.calc_ut(jd_ut, swe.SUN)[0][0] % 360
     moon_longitude_deg = swe.calc_ut(jd_ut, swe.MOON)[0][0] % 360
 
-    rise_flag, rise_data = swe.rise_trans(jd_ut, swe.SUN, req.lon, req.lat, rsmi=swe.CALC_RISE)
-    set_flag, set_data = swe.rise_trans(jd_ut, swe.SUN, req.lon, req.lat, rsmi=swe.CALC_SET)
+    geopos = (req.lon, req.lat, 0.0)
+    rise_flag, rise_data = swe.rise_trans(jd_ut, swe.SUN, swe.CALC_RISE, geopos)
+    set_flag, set_data = swe.rise_trans(jd_ut, swe.SUN, swe.CALC_SET, geopos)
     if rise_flag < 0 or set_flag < 0:
         raise HTTPException(
             status_code=422,
