@@ -1,2 +1,8 @@
 [tool.pytest.ini_options]
 pythonpath = ["."]
+filterwarnings = [
+    # Starlette's own testclient module uses a deprecated anyio alias
+    # internally (as of starlette 1.6.0 / anyio 4.15.1, both latest) --
+    # nothing we can fix from our dependency pins.
+    "ignore:The anyio.abc.BlockingPortal alias is deprecated:DeprecationWarning:starlette.testclient",
+]
