@@ -8,20 +8,21 @@ domain this service's clients happen to be used for (see this repo's CI
 boundary check for the exact watched terms). Anything domain-specific
 belongs in the separate `panchanga-core` repository instead.  # boundary-check-ignore
 
-NOTE: the actual `swisseph` import and calls are stubbed out below with
-clearly marked TODOs. Do not wire up real Swiss Ephemeris calls until the
-licensing decision (product plan §11) is finalized and this repo has been
-split out and published as its own public, AGPL-3.0 repository.
+Real Swiss Ephemeris (`pyswisseph`) calls are wired up below. All returned
+longitudes are raw tropical ecliptic longitudes — no sidereal conversion
+happens here; that is the responsibility of downstream consumers such as
+`panchanga-core`.
 """
 
+import os
 from datetime import datetime, timezone
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
+import swisseph as swe
 
-# TODO: once licensing is confirmed, uncomment and use the real library.
-# import swisseph as swe
-# swe.set_ephe_path(os.environ["SE_EPHE_PATH"])
+if "SE_EPHE_PATH" in os.environ:
+    swe.set_ephe_path(os.environ["SE_EPHE_PATH"])
 
 app = FastAPI(
     title="ephemeris-service",
@@ -42,8 +43,23 @@ class PositionRequest(BaseModel):
 class PositionResponse(BaseModel):
     sun_longitude_deg: float
     moon_longitude_deg: float
+    jupiter_longitude_deg: float
     sunrise_utc: datetime
     sunset_utc: datetime
+
+
+def _julday_ut(dt: datetime) -> float:
+    hour = dt.hour + dt.minute / 60 + dt.second / 3600
+    return swe.julday(dt.year, dt.month, dt.day, hour)
+
+
+def _jd_ut_to_datetime(jd_ut: float) -> datetime:
+    year, month, day, hour = swe.revjul(jd_ut)
+    hour_int = int(hour)
+    minute_full = (hour - hour_int) * 60
+    minute_int = int(minute_full)
+    second_int = round((minute_full - minute_int) * 60)
+    return datetime(year, month, day, hour_int, minute_int, second_int, tzinfo=timezone.utc)
 
 
 @app.get("/health")
@@ -68,22 +84,34 @@ def source():
 @app.post("/position", response_model=PositionResponse)
 def position(req: PositionRequest):
     """
-    Returns raw sun/moon ecliptic longitude and sunrise/sunset for the given
-    UTC datetime and observer location.
-
-    STUB IMPLEMENTATION — replace with real Swiss Ephemeris calls, e.g.:
-
-        jd = swe.julday(req.datetime_utc.year, req.datetime_utc.month,
-                         req.datetime_utc.day,
-                         req.datetime_utc.hour + req.datetime_utc.minute / 60)
-        sun = swe.calc_ut(jd, swe.SUN)[0][0]
-        moon = swe.calc_ut(jd, swe.MOON)[0][0]
-        sunrise, sunset = swe.rise_trans(...)  # see swisseph docs
+    Returns raw sun/moon/Jupiter ecliptic longitude and sunrise/sunset for
+    the given UTC datetime and observer location.
     """
-    raise HTTPException(
-        status_code=501,
-        detail=(
-            "Not implemented: wire up real Swiss Ephemeris calls here once "
-            "the licensing decision is finalized (see product plan §11)."
-        ),
+    jd_ut = _julday_ut(req.datetime_utc)
+
+    sun_longitude_deg = swe.calc_ut(jd_ut, swe.SUN)[0][0]
+    moon_longitude_deg = swe.calc_ut(jd_ut, swe.MOON)[0][0]
+    jupiter_longitude_deg = swe.calc_ut(jd_ut, swe.JUPITER)[0][0]
+
+    rise_rsmi = swe.CALC_RISE | swe.BIT_DISC_CENTER
+    set_rsmi = swe.CALC_SET | swe.BIT_DISC_CENTER
+    try:
+        _, rise_tret = swe.rise_trans(
+            jd_ut, swe.SUN, lon=req.lon, lat=req.lat, alt=0, rsmi=rise_rsmi
+        )
+        _, set_tret = swe.rise_trans(
+            jd_ut, swe.SUN, lon=req.lon, lat=req.lat, alt=0, rsmi=set_rsmi
+        )
+    except Exception as exc:  # pragma: no cover - polar day/night edge cases
+        raise HTTPException(
+            status_code=422,
+            detail=f"Could not compute sunrise/sunset for this location/date: {exc}",
+        )
+
+    return PositionResponse(
+        sun_longitude_deg=sun_longitude_deg,
+        moon_longitude_deg=moon_longitude_deg,
+        jupiter_longitude_deg=jupiter_longitude_deg,
+        sunrise_utc=_jd_ut_to_datetime(rise_tret[0]),
+        sunset_utc=_jd_ut_to_datetime(set_tret[0]),
     )

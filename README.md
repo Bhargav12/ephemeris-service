@@ -24,10 +24,13 @@ Response:
 {
   "sun_longitude_deg": 165.32,
   "moon_longitude_deg": 201.77,
+  "jupiter_longitude_deg": 98.14,
   "sunrise_utc": "2026-09-07T00:28:00Z",
   "sunset_utc": "2026-09-07T12:41:00Z"
 }
 ```
+All `*_longitude_deg` fields are raw tropical ecliptic longitudes (0-360°);
+no sidereal conversion happens in this service.
 
 ### `GET /source`
 AGPL-3.0 §13 compliance: points network users of this service at the
@@ -40,17 +43,23 @@ Basic liveness check.
 
 ```bash
 pip install -r requirements.txt
-# Requires Swiss Ephemeris data files (.se1) — download separately from
-# https://www.astro.com/ftp/swisseph/ephe/ and set SE_EPHE_PATH.
+# For best precision, download the Swiss Ephemeris data files (.se1) from
+# https://www.astro.com/ftp/swisseph/ephe/ and set SE_EPHE_PATH. Without
+# them, pyswisseph falls back to its built-in Moshier ephemeris.
 export SE_EPHE_PATH=/path/to/ephe
 uvicorn app.main:app --reload
 ```
 
+### Running tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+
 ## Status
 
-Real Swiss Ephemeris calls are no longer blocked pending a licensing
-decision — implement the `pyswisseph` integration in `app/main.py` per the
-existing TODOs.
+Real Swiss Ephemeris calls are wired up in `app/main.py` via `pyswisseph`.
 
 ## Before this repo is considered fully compliant
 
