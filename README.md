@@ -46,11 +46,48 @@ export SE_EPHE_PATH=/path/to/ephe
 uvicorn app.main:app --reload
 ```
 
+### Getting the `.se1` ephemeris data files
+
+`pyswisseph` needs Swiss Ephemeris's `.se1` data files for full precision.
+They're large binary files and are **not** committed to this repo. To get
+them:
+
+- **Local dev:** download the files you need (at minimum the planetary
+  file covering your date range, e.g. `sepl_18.se1`) from
+  https://www.astro.com/ftp/swisseph/ephe/ into a local directory, then
+  `export SE_EPHE_PATH=/path/to/that/directory` before running the service.
+- **CI:** add a step before running tests that downloads the same files
+  into a cache directory and sets `SE_EPHE_PATH`, e.g.:
+  ```yaml
+  - name: Cache Swiss Ephemeris data
+    uses: actions/cache@v4
+    with:
+      path: ephe
+      key: swisseph-ephe-v1
+  - name: Fetch Swiss Ephemeris data files
+    run: |
+      mkdir -p ephe
+      cd ephe
+      for f in sepl_18.se1 semo_18.se1; do
+        [ -f "$f" ] || curl -fsSL -O "https://www.astro.com/ftp/swisseph/ephe/$f"
+      done
+  - name: Run tests
+    run: pytest
+    env:
+      SE_EPHE_PATH: ${{ github.workspace }}/ephe
+  ```
+- **If `SE_EPHE_PATH` is unset or the files aren't found**, `pyswisseph`
+  automatically falls back to its built-in Moshier ephemeris (no data files
+  needed), which is accurate to within a few arcseconds for sun/moon —
+  good enough for local testing, but the real `.se1` files should be used
+  in production for full precision.
+
 ## Status
 
-Real Swiss Ephemeris calls are no longer blocked pending a licensing
-decision — implement the `pyswisseph` integration in `app/main.py` per the
-existing TODOs.
+The `pyswisseph` integration in `app/main.py` is implemented: `/position`
+computes real sun/moon ecliptic longitudes and sunrise/sunset via Swiss
+Ephemeris (falling back to Moshier when `.se1` files aren't available, see
+above).
 
 ## Before this repo is considered fully compliant
 

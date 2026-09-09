@@ -1,4 +1,4 @@
 fastapi>=0.110
 uvicorn[standard]>=0.29
 pydantic>=2.6
-# pyswisseph>=2.10   # TODO: uncomment once licensing decision is finalized (AGPL-3.0 dependency)
+pyswisseph>=2.10
